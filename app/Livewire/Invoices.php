@@ -99,6 +99,7 @@ class Invoices extends Component
     public function toggleDropdown(string $invoiceId): void
     {
         $this->openDropdownId = $this->openDropdownId === $invoiceId ? null : $invoiceId;
+        $this->dispatch('dropdown.show', ['openDropdownId' => $this->openDropdownId]);
     }
 
     public function render()

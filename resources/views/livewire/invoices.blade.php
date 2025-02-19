@@ -100,11 +100,10 @@
                                         <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-500">
                                             {{ \Carbon\Carbon::parse($invoice['created_at'])->format('M j, g:i A') }}
                                         </td>
-                                        <td
-                                            class="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                            <div class="relative">
+                                        <td class="whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                            <div>
                                                 <button wire:click="toggleDropdown('{{ $invoice['id'] }}')"
-                                                    class="text-gray-400 hover:text-gray-500">
+                                                    class="text-gray-400 hover:text-gray-500 btn-toggle">
                                                     <span class="sr-only">Open options</span>
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                         viewBox="0 0 24 24" stroke="currentColor">
@@ -114,7 +113,7 @@
                                                 </button>
 
                                                 @if ($openDropdownId === $invoice['id'])
-                                                    <div class="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                    <div class="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transform transition ease-out duration-100 drop-down">
                                                         <h4 class="px-4 py-3 text-sm font-semibold text-gray-500 text-left uppercase">Actions</h4>
                                                         <button class="block w-full px-4 py-2 text-sm text-left text-blue-500 hover:bg-gray-100">
                                                             Download PDF
@@ -149,3 +148,31 @@
         </div>
     </div>
 </div>
+@script
+<script>
+    Livewire.on('dropdown.show', (data) => {
+        const openDropdownId = data[0].openDropdownId || null;
+        if (openDropdownId !== null) {
+            setTimeout(() => {
+                const dropdowns = document.querySelectorAll('.drop-down');
+                if (dropdowns.length > 0) {
+                    dropdowns.forEach(dropdown => {
+                        const btnToggle = dropdown.closest('td').querySelector('.btn-toggle');
+                        const rect = btnToggle.getBoundingClientRect();
+                        dropdown.style.left = `${rect.left + window.scrollX - 180}px`;
+                        dropdown.style.top = `${rect.bottom + window.scrollY}px`;
+                    });
+                }
+            }, 1);
+        }
+    });
+    document.addEventListener('click', function(event) {
+        const dropdown = document.querySelector('.drop-down');
+        const isClickInsideToggle = Array.from(document.querySelectorAll('.btn-toggle'))
+            .some(btnToggle => btnToggle.contains(event.target));
+        if (dropdown && !dropdown.contains(event.target) && !isClickInsideToggle) {
+            @this.set('openDropdownId', null);
+        }
+    });
+</script>
+@endscript
