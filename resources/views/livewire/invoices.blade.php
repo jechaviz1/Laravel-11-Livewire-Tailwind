@@ -13,7 +13,7 @@
         </div>
 
         <div class="mt-6 border-b border-gray-200">
-            <nav class="-mb-px flex space-x-8">
+            <nav class="-mb-px flex space-x-8 overflow-y-auto">
                 @php
                     $tabs = [
                         'all' => 'All invoices',
@@ -23,7 +23,6 @@
                         'paid' => 'Paid',
                     ];
                 @endphp
-
                 @foreach ($tabs as $key => $label)
                     <button wire:click="setActiveTab('{{ $key }}')"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
@@ -41,7 +40,7 @@
             <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                     <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-300">
+                        <table class="min-w-full divide-y divide-gray-300 table-auto">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th scope="col"
@@ -159,7 +158,10 @@
                     dropdowns.forEach(dropdown => {
                         const btnToggle = dropdown.closest('td').querySelector('.btn-toggle');
                         const rect = btnToggle.getBoundingClientRect();
-                        dropdown.style.left = `${rect.left + window.scrollX - 180}px`;
+                        dropdown.style.left = `${rect.left + window.scrollX}px`;
+                        if (window.innerWidth < 640) {
+                            dropdown.style.left = `${rect.left + window.scrollX - dropdown.offsetWidth + btnToggle.offsetWidth}px`;
+                        }
                         dropdown.style.top = `${rect.bottom + window.scrollY}px`;
                         dropdown.classList.remove('hidden');
                     });
